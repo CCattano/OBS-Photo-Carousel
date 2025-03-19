@@ -317,6 +317,12 @@
       color: #d1467e !important; /* Deep Rose (Error Color) */
     }
 
+    .notice-text {
+      color: #ff69b4; /* Hot Pink */
+      font-weight: bold;
+      padding-left: 16px;
+    }
+
     .cfgActionBtnContainer {
       gap: 20px;
       justify-content: flex-end;
@@ -451,7 +457,7 @@
     <label for="durationSecInput">Amount of Seconds to Show an Image</label>
   </div>
   <label id="errorsEl" class="hidden error-text"></label>
-  <label id="noticeEl" class="hidden"></label>
+  <label id="noticeEl" class="hidden notice-text"></label>
   <div class="flex-row cfgActionBtnContainer">
     <button id="saveSettingsBtn" class="btn outline">Save</button>
     <button id="goBackBtn" class="btn secondary">Back</button>
