@@ -1,0 +1,35 @@
+{
+  "name": "obs-photo-carousel",
+  "version": "1.0.0",
+  "description": "Simple Localhost Web Server for relaying photos in the cwd to a provided OBS Browser source",
+  "author": "Torty",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "dist/main.js",
+  "bin": "dist/main.js",
+  "scripts": {
+    "start-local": "tsx source/main.ts",
+    "build:exe": "npm install && tsc --p tsconfig.json && pkg . && rimraf dist"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.8",
+    "express": "^4.21.2",
+    "file-type": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "pkg": "^5.8.1",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.19.3"
+  },
+  "pkg": {
+    "scripts": "dist/main.js",
+    "assets": [
+      "node_modules/**/*"
+    ],
+    "targets": [
+      "node16-win-x64"
+    ],
+    "outputPath": "release/"
+  }
+}

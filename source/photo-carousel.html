@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" style="background: black">
+<head>
+  <title>OBS Photo Carousel</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=settings"/>
+  <style>
+    :root {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      /*Always added intentionally, should always be honored before any other display*/
+      display: none !important;
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes spinner-fade-in {
+      0% {
+        opacity: 0;
+        transform: scale(0.8); /* Optional: Slightly smaller at start */
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+    }
+
+    @keyframes breathe {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.15); /* Expands slightly */
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Centering container */
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      pointer-events: all;
+      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .spinner-container:not(.hidden) .spinner-inner-container {
+      animation: spinner-fade-in 0.5s ease-in-out forwards;
+    }
+
+    .spinner-inner-container {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    /* Main spinner ring (BREATHE animation is here) */
+    .spinner {
+      width: 125px;
+      height: 125px;
+      position: relative;
+      border-radius: 50%;
+      animation: breathe 2s ease-in-out infinite; /* Only breathing here */
+    }
+
+    /* Inner rotating ring (SPIN animation happens here) */
+    .spinner-inner {
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top: 4px solid #ff69b4; /* Hot pink */
+      border-radius: 50%;
+      animation: spin 1s linear infinite; /* Only spinning here */
+      position: absolute;
+      top: 0;
+      left: 0;
+      box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+    }
+
+    /* Glowing effect */
+    .spinner::before {
+      content: "";
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      top: 10%;
+      left: 10%;
+      border-radius: 50%;
+      background: rgba(255, 105, 180, 0.3);
+      filter: blur(8px);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Outer halo effect */
+    .spinner::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      background: rgba(255, 105, 180, 0.2);
+      filter: blur(15px);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .carousel {
+      position: relative;
+      min-height: 175px;
+    }
+
+    .carousel:hover {
+      .settingsButton {
+        opacity: 1;
+      }
+    }
+
+    .settingsButton {
+      color: white;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 48px;
+      height: 48px;
+      font-size: 48px;
+      background-color: rgba(0, 0, 0, .6);
+      border-radius: 30px;
+      padding: 5px;
+      margin-top: 10px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: opacity 0.5s ease-in-out;
+      opacity: 0;
+      z-index: 9999;
+    }
+
+    .image {
+      transition: opacity 1s ease-in-out;
+      object-fit: contain;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .fade-out {
+      opacity: 0;
+    }
+
+    .carouselErr {
+      padding: 25px;
+      gap: 25px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      text-align: center;
+      color: #d1467e; /* Deep Rose (Error Color) */
+      background-color: rgba(209, 70, 126, 0.1); /* Soft background */
+      border: 2px solid #b13669; /* Dark Berry Pink */
+      border-radius: 10px;
+      transition: opacity 3s ease-in;
+      opacity: 0;
+    }
+
+    .carouselErr > * {
+      margin: 0;
+    }
+
+    .carouselErr:not(.hidden) {
+      animation: fade-in 1s ease-in-out forwards;
+    }
+
+    .config {
+      max-width: 650px;
+      margin: 50px auto 0 auto;
+      gap: 15px;
+    }
+
+    /* Base input styles */
+    .input-container {
+      position: relative;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-container input {
+      padding: 1rem;
+      font-size: 1.2rem;
+      color: white;
+      border: 2px solid rgba(255, 105, 180, 0.5);
+      border-radius: 0.5rem;
+      outline: none;
+      transition: all 0.3s ease-in-out;
+      backdrop-filter: blur(8px);
+      background: rgba(255, 105, 180, 0.1); /* Light transparent pink */
+    }
+
+    /* Floating label */
+    .input-container label {
+      position: absolute;
+      left: .6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s ease-in-out;
+      pointer-events: none;
+    }
+
+    /* Move label up when input is focused or has content */
+    .input-container input:focus + label,
+    .input-container input:not(:placeholder-shown) + label {
+      top: 0;
+      transform: translateY(-150%);
+      font-size: 1rem;
+      color: #ff69b4;
+    }
+
+    /* Hide placeholder by default */
+    .input-container input::placeholder {
+      color: transparent;
+      transition: color 0.3s ease-in-out;
+      opacity: 0;
+    }
+
+    /* Show placeholder ONLY when input is focused and empty */
+    .input-container input:focus:placeholder-shown::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      opacity: 1;
+    }
+
+    .error-text {
+      color: #d1467e; /* Deep Rose */
+      font-weight: bold;
+    }
+
+    .error-text:hover {
+      color: #e0528f; /* Slightly brighter error color */
+    }
+
+    /* Programmatically set, it not actually unused */
+    .error-input {
+      /*Errors are set explicitly with intent, do not let them be overridden*/
+      border: 2px solid #b13669 !important; /* Dark Berry Pink */
+      background-color: rgba(209, 70, 126, 0.1) !important; /* Soft background */
+    }
+
+    .error-input + label,
+    .error-input:focus + label {
+      /*Errors are set explicitly with intent, do not let them be overridden*/
+      color: #d1467e !important; /* Deep Rose (Error Color) */
+    }
+
+    .cfgActionBtnContainer {
+      gap: 20px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      height: 50px;
+      margin: 0;
+      touch-action: manipulation;
+      cursor: pointer;
+      background-image: none;
+      white-space: nowrap;
+      padding: 1.2rem 2.4rem;
+      font-size: 1.4rem;
+      line-height: 120%;
+      border-radius: .4rem;
+      user-select: none;
+      background-color: #ff69b4; /* Hot Pink */
+      color: white;
+      border: none;
+      transition: background-color 0.3s, color 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:active, .btn:hover {
+      outline: none;
+      background-color: #ff1493; /* Deep Pink */
+      color: white;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn.outline {
+      color: #ff69b4; /* Hot Pink */
+      background-color: transparent;
+      border: 2px solid #ff69b4;
+    }
+
+    .btn.outline:focus {
+      border-color: white;
+    }
+
+    .btn.outline:hover {
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn.outline:hover,
+    .btn.outline:active {
+      color: white;
+      background-color: #ff69b4;
+      border-color: #ff69b4;
+    }
+
+    .btn.secondary {
+      color: white;
+      background-color: rgba(138, 51, 92, 0.9); /* Dark pink with slight transparency */
+      border: 2px solid rgba(138, 51, 92, 0.9);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .btn.secondary:hover {
+      background-color: rgba(160, 59, 109, 1);
+      border-color: rgba(160, 59, 109, 1);
+    }
+
+    .btn.secondary:focus, .btn.secondary:active {
+      color: white;
+      background-color: #a03b6d; /* Slightly brighter muted pink */
+      border-color: #a03b6d;
+    }
+
+    .downNotice {
+      padding: 25px;
+      gap: 25px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      text-align: center;
+      color: #d1467e; /* Deep Rose (Error Color) */
+      background-color: rgba(209, 70, 126, 0.1); /* Soft background */
+      border: 2px solid #b13669; /* Dark Berry Pink */
+      border-radius: 10px;
+      transition: opacity 3s ease-in;
+      opacity: 0;
+    }
+
+    .downNotice > * {
+      margin: 0;
+    }
+
+    .downNotice:not(.hidden) {
+      animation: fade-in 1s ease-in-out forwards;
+    }
+  </style>
+</head>
+<body>
+
+<label id="settings" class="hidden">{}</label>
+
+<div id="loadingSpinner" class="spinner-container">
+  <div class="spinner-inner-container">
+    <div class="spinner">
+      <div class="spinner-inner"></div>
+    </div>
+  </div>
+</div>
+
+<div id="carousel" class="hidden carousel">
+  <span id="openConfigBtn" class="material-symbols-outlined settingsButton">settings</span>
+  <img class="image fade-out" src="" id="image" alt="image"/>
+  <div id="carouselErr" class="hidden flex-col carouselErr">
+    <h2>Something Has Gone Wrong</h2>
+    <p id="carouselErrTxt"></p>
+  </div>
+</div>
+
+<div id="config" class="hidden flex-col config">
+  <div class="input-container">
+    <input id="absPathInput" type="text" placeholder="C:/Users/Olivia/Pictures" required="required"/>
+    <label for="absPathInput">Full Path to Image Folder</label>
+  </div>
+  <div class="input-container">
+    <input id="carouselLocInput" type="text" placeholder="C:/Users/Olivia/Desktop/StreamTools/photo-carousel.html" required="required"/>
+    <label for="carouselLocInput">Full Path to OBS Browser Source HTML File</label>
+  </div>
+  <div class="input-container">
+    <input id="durationSecInput" type="number" placeholder="30" required="required"/>
+    <label for="durationSecInput">Amount of Seconds to Show an Image</label>
+  </div>
+  <label id="errorsEl" class="hidden error-text"></label>
+  <label id="noticeEl" class="hidden"></label>
+  <div class="flex-row cfgActionBtnContainer">
+    <button id="saveSettingsBtn" class="btn outline">Save</button>
+    <button id="goBackBtn" class="btn secondary">Back</button>
+  </div>
+</div>
+
+<div id="downNotice" class="hidden flex-col downNotice">
+  <h2>Cannot Find Running Carousel App</h2>
+  <p>Looks like the Carousel app needs to be started or has gone down.</p>
+  <p>Verify it is running then restart this OBS Browser Source.</p>
+</div>
+
+<script lang="javascript">
+  const settingsEl = document.getElementById('settings');
+  let settings = JSON.parse(settingsEl.textContent?.trim() ?? '{}');
+
+  const carouselEl = document.getElementById('carousel');
+  const configEl = document.getElementById('config');
+
+  const showCarousel = async () => {
+    const openCfgBtnEl = document.getElementById('openConfigBtn');
+    const imgEl = document.getElementById('image');
+    let loopImages = true;
+
+    const resetState = () => {
+      // Set this so our loop stops on the next iteration
+      loopImages = false;
+      // Hide our carousel container
+      carouselEl.classList.toggle('hidden');
+      // Reset our image element to be faded out so our
+      // isFirstImage check works when we come back here later
+      imgEl.classList.remove('fade-out'); // Do a hard remove to be sure about the state of it
+      imgEl.classList.add('fade-out'); // Add our class so it's faded out when we come back
+      // If we were displaying an image at the time clean it up
+      // Capture the old img src so we don't lose it in case imgEl changes later
+      const oldImgSrc = imgEl.src;
+      if (oldImgSrc?.length)
+        URL.revokeObjectURL(oldImgSrc);
+    }
+
+    const showErr = (errMsg) => {
+      // Fade out our current image to make room for our error
+      imgEl.classList.add('fade-out');
+      // Set our error text
+      document.getElementById('carouselErrTxt').innerText = errMsg;
+      // Show our error container
+      document.getElementById('carouselErr').classList.remove('hidden');
+    };
+
+    openCfgBtnEl.onclick = () => {
+      resetState();
+      showSettings();
+    };
+
+    // Reveal our carousel container so our image can be seen fading into view
+    carouselEl.classList.toggle('hidden');
+
+    let fetchFailCount = 0;
+    let isFirstImage = true;
+    while (loopImages) {
+      let fetchResp;
+      try {
+        fetchResp = await fetch('http://localhost:2222/next');
+        if (fetchResp.status !== 200) {
+          if (++fetchFailCount >= 3) {
+            // If the app is up but we couldn't fetch an image 3 times in a row we'll error out
+            loopImages = false;
+            const errMsg = await fetchResp.text();
+            showErr(errMsg);
+            break;
+          }
+          continue;
+        }
+        fetchFailCount = 0
+      } catch {
+        // Even a non-200 response will return successfully to be parsed
+        // If we land in this catch-block it should be because the app is no longer up
+        // But we'll explicitly check just to be sure
+        try {
+          await fetch('http://localhost:2222/health');
+          // If we got here the app is up but something about the fetch failed
+          // We'll note this and rerun the loop. If it happens 3 times in a row we'll error out
+          if (++fetchFailCount >= 3) {
+            loopImages = false;
+            const errMsg =
+              'An image couldn\'t be fetched 3 times in a row but the Carousel App is Running.' +
+              '\nTry resetting the App and the OBS Browser Source.' +
+              '\nIf you continue to encounter errors reach out to Torty.';
+            showErr(errMsg);
+            break;
+          }
+          continue;
+        } catch {
+          // If the health check fails the carousel app is down so we'll show that
+          resetState();
+          document.getElementById('downNotice').classList.remove('hidden');
+          break;
+        }
+      }
+
+      const imgSrcStream = await fetchResp.blob();
+      const imgSrc = URL.createObjectURL(imgSrcStream);
+
+      if (isFirstImage) {
+        isFirstImage = false;
+        // Image is already faded out if we have not set an image yet
+        // Set src and begin fading it in
+        imgEl.src = imgSrc;
+        imgEl.classList.toggle('fade-out');
+      } else {
+        // If we're swapping out an old image for a new first fade-out the old image
+        imgEl.classList.toggle('fade-out');
+        // Wait for the fade animation to complete
+        await new Promise(r => window.setTimeout(r, 1000));
+        // Clean up our old image
+        // Capture the old img src so we don't lose it in case imgEl changes later
+        const oldImgSrc = imgEl.src;
+        URL.revokeObjectURL(oldImgSrc);
+        // Set our new image while it's not visible
+        imgEl.src = imgSrc;
+        // Start fading in our new image
+        imgEl.classList.toggle('fade-out');
+      }
+
+      // Wait for our image to be displayed for the duration specified in settings
+      await new Promise(r => window.setTimeout(r, settings.imageDurationMs))
+    }
+  };
+
+  const showSettings = () => {
+    const absPathInputEl = document.getElementById('absPathInput');
+    const carouselLocInputEl = document.getElementById('carouselLocInput');
+    const durationSecInputEl = document.getElementById('durationSecInput');
+    const saveSettingsBtnEl = document.getElementById('saveSettingsBtn');
+    const goBackBtnEl = document.getElementById('goBackBtn');
+    const errorsEl = document.getElementById('errorsEl');
+    const noticeEl = document.getElementById('noticeEl');
+    const loadingSpinnerEl = document.getElementById('loadingSpinner');
+
+    if (settings.absPath?.length)
+      absPathInputEl.value = settings.absPath;
+    if (settings.carouselLoc?.length)
+      carouselLocInputEl.value = settings.carouselLoc;
+    if (settings.imageDurationMs)
+      durationSecInputEl.value = settings.imageDurationMs / 1000;
+    configEl.classList.remove('hidden');
+
+    const resetElementStates = () => {
+      // Hard reset our loading spinner's visibility
+      loadingSpinnerEl.classList.remove('hidden');
+      loadingSpinnerEl.classList.add('hidden');
+
+      // Hard reset our notice el's visibility
+      noticeEl.classList.remove('hidden');
+      noticeEl.classList.add('hidden');
+
+      // Hard reset our error el's visibility
+      errorsEl.classList.remove('hidden');
+      errorsEl.classList.add('hidden');
+
+      // Reset any error notices on the inputs
+      absPathInputEl.classList.remove('error-input');
+      carouselLocInputEl.classList.remove('error-input');
+      durationSecInputEl.classList.remove('error-input');
+    };
+
+    saveSettingsBtnEl.onclick = () => {
+      resetElementStates();
+
+      const newSettings = {
+        absPath: absPathInputEl.value,
+        carouselLoc: carouselLocInputEl.value,
+        imageDurationMs: (durationSecInputEl.value || 0) * 1000
+      };
+
+      let errMsg;
+      if (!newSettings.absPath?.length) {
+        errMsg = 'Please specify where to find the images to display.';
+        absPathInputEl.classList.add('error-input');
+      } else if (!newSettings.carouselLoc?.length) {
+        errMsg = 'Please specify where to find the OBS Browser Source HTML file.';
+        carouselLocInputEl.classList.add('error-input');
+      } else if (!newSettings.imageDurationMs) {
+        errMsg = 'Please specify an amount of seconds greater than 0.';
+        durationSecInputEl.classList.add('error-input');
+      }
+
+      if (errMsg?.length) {
+        errorsEl.innerText = errMsg;
+        errorsEl.classList.remove('hidden');
+        return;
+      }
+
+      // Show our loading spinner before making a web request
+      loadingSpinnerEl.classList.remove('hidden');
+
+      fetch('http://localhost:2222/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newSettings)
+      }).then((resp) => {
+        if (resp.status !== 200) {
+          return resp.text().then(errMsg => {
+            errorsEl.innerText = errMsg?.length
+              ? errMsg
+              : 'An unknown error occurred while saving settings.\nPlease try again or refresh the OBS Browser Source.';
+            errorsEl.classList.remove('hidden');
+          });
+        } else {
+          // Update local copy of settings with new settings
+          settings = newSettings;
+          // Once done show a success notice
+          noticeEl.innerText = 'Settings saved successfully!';
+          noticeEl.classList.remove('hidden');
+        }
+      }).finally(() => {
+        // Reset our loading spinner's visibility
+        loadingSpinnerEl.classList.add('hidden');
+      });
+    };
+
+    goBackBtnEl.onclick = () => {
+      resetElementStates();
+      configEl.classList.add('hidden');
+      showCarousel();
+    };
+  };
+
+  const init = async () => {
+    const loadingSpinnerEl = document.getElementById('loadingSpinner');
+
+    let carouselAppIsDown;
+    try {
+      const healthResp = await fetch('http://localhost:2222/health');
+      carouselAppIsDown = healthResp?.status !== 200;
+    } catch {
+      carouselAppIsDown = true;
+    }
+
+    if (carouselAppIsDown) {
+      loadingSpinnerEl.classList.add('hidden');
+      document.getElementById('downNotice').classList.remove('hidden');
+      return;
+    }
+
+    if (!settings.absPath?.length) {
+      loadingSpinnerEl.classList.add('hidden');
+      showSettings();
+    } else {
+      // Update the Carousel App with where to find our images then display our images
+      await fetch('http://localhost:2222/source', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          absPath: settings.absPath
+        })
+      });
+      loadingSpinnerEl.classList.add('hidden');
+      showCarousel().then(() => {});
+    }
+  };
+
+  init();
+</script>
+</body>
+</html>
