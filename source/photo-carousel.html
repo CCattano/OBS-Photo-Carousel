@@ -6,11 +6,13 @@
   <style>
     :root {
       font-family: Roboto, "Helvetica Neue", sans-serif;
+      font-size: 10px;
     }
 
     body {
       margin: 0;
       overflow: hidden;
+      font-size: 1.6rem;
     }
 
     .material-symbols-outlined {
@@ -119,8 +121,8 @@
 
     /* Main spinner ring (BREATHE animation is here) */
     .spinner {
-      width: 125px;
-      height: 125px;
+      width: 12.5rem;
+      height: 12.5rem;
       position: relative;
       border-radius: 50%;
       animation: breathe 2s ease-in-out infinite; /* Only breathing here */
@@ -130,14 +132,14 @@
     .spinner-inner {
       width: 100%;
       height: 100%;
-      border: 4px solid transparent;
-      border-top: 4px solid #ff69b4; /* Hot pink */
+      border: 0.4rem solid transparent;
+      border-top: 0.4rem solid #ff69b4; /* Hot pink */
       border-radius: 50%;
       animation: spin 1s linear infinite; /* Only spinning here */
       position: absolute;
       top: 0;
       left: 0;
-      box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+      box-shadow: 0 0 1.5rem rgba(255, 105, 180, 0.6);
     }
 
     /* Glowing effect */
@@ -150,7 +152,7 @@
       left: 10%;
       border-radius: 50%;
       background: rgba(255, 105, 180, 0.3);
-      filter: blur(8px);
+      filter: blur(0.8rem);
       animation: pulse 1.5s ease-in-out infinite;
     }
 
@@ -164,13 +166,13 @@
       left: 0;
       border-radius: 50%;
       background: rgba(255, 105, 180, 0.2);
-      filter: blur(15px);
+      filter: blur(1.5rem);
       animation: pulse 2s ease-in-out infinite;
     }
 
     .carousel {
       position: relative;
-      min-height: 175px;
+      min-height: 17.5rem;
     }
 
     .carousel:hover {
@@ -184,14 +186,14 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 48px;
-      height: 48px;
-      font-size: 48px;
+      width: 4.8rem;
+      height: 4.8rem;
+      font-size: 4.8rem;
       background-color: rgba(0, 0, 0, .6);
-      border-radius: 30px;
-      padding: 5px;
-      margin-top: 10px;
-      margin-right: 10px;
+      border-radius: 3rem;
+      padding: 0.5rem;
+      margin-top: 1rem;
+      margin-right: 1rem;
       cursor: pointer;
       transition: opacity 0.5s ease-in-out;
       opacity: 0;
@@ -210,8 +212,8 @@
     }
 
     .carouselErr {
-      padding: 25px;
-      gap: 25px;
+      padding: 2.5rem;
+      gap: 2.5rem;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -219,8 +221,8 @@
       text-align: center;
       color: #d1467e; /* Deep Rose (Error Color) */
       background-color: rgba(209, 70, 126, 0.1); /* Soft background */
-      border: 2px solid #b13669; /* Dark Berry Pink */
-      border-radius: 10px;
+      border: 0.2rem solid #b13669; /* Dark Berry Pink */
+      border-radius: 1rem;
       transition: opacity 3s ease-in;
       opacity: 0;
     }
@@ -234,41 +236,41 @@
     }
 
     .config {
-      max-width: 650px;
-      margin: 50px auto 0 auto;
-      gap: 15px;
+      max-width: 65rem;
+      margin: 5rem auto 0 auto;
+      gap: 1.5rem;
     }
 
     /* Base input styles */
     .input-container {
       position: relative;
-      margin: 1.5rem 0;
+      margin: 2.4rem 0;
       display: flex;
       flex-direction: column;
     }
 
     .input-container input {
-      padding: 1rem;
-      font-size: 1.2rem;
+      padding: 1.6rem;
+      font-size: 1.92rem;
       color: white;
-      border: 2px solid rgba(255, 105, 180, 0.5);
-      border-radius: 0.5rem;
+      border: 0.2rem solid rgba(255, 105, 180, 0.5);
+      border-radius: 0.8rem;
       outline: none;
       transition: all 0.3s ease-in-out;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(0.8rem);
       background: rgba(255, 105, 180, 0.1); /* Light transparent pink */
     }
 
     /* Floating label */
     .input-container label {
       position: absolute;
-      left: .6rem;
+      left: 0.96rem;
       top: 50%;
       transform: translateY(-50%);
       background: transparent;
       color: rgba(255, 255, 255, 0.7);
-      padding: 0 0.5rem;
-      font-size: 1rem;
+      padding: 0 0.8rem;
+      font-size: 1.6rem;
       transition: all 0.3s ease-in-out;
       pointer-events: none;
     }
@@ -278,7 +280,7 @@
     .input-container input:not(:placeholder-shown) + label {
       top: 0;
       transform: translateY(-150%);
-      font-size: 1rem;
+      font-size: 1.6rem;
       color: #ff69b4;
     }
 
@@ -307,7 +309,7 @@
     /* Programmatically set, it not actually unused */
     .error-input {
       /*Errors are set explicitly with intent, do not let them be overridden*/
-      border: 2px solid #b13669 !important; /* Dark Berry Pink */
+      border: 0.2rem solid #b13669 !important; /* Dark Berry Pink */
       background-color: rgba(209, 70, 126, 0.1) !important; /* Soft background */
     }
 
@@ -320,11 +322,11 @@
     .notice-text {
       color: #ff69b4; /* Hot Pink */
       font-weight: bold;
-      padding-left: 16px;
+      padding-left: 1.6rem;
     }
 
     .cfgActionBtnContainer {
-      gap: 20px;
+      gap: 2rem;
       justify-content: flex-end;
     }
 
@@ -332,36 +334,36 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: .6rem;
-      height: 50px;
+      gap: 0.96rem;
+      height: 5rem;
       margin: 0;
       touch-action: manipulation;
       cursor: pointer;
       background-image: none;
       white-space: nowrap;
-      padding: 1.2rem 2.4rem;
-      font-size: 1.4rem;
+      padding: 1.92rem 3.84rem;
+      font-size: 2.24rem;
       line-height: 120%;
-      border-radius: .4rem;
+      border-radius: 0.64rem;
       user-select: none;
       background-color: #ff69b4; /* Hot Pink */
       color: white;
       border: none;
       transition: background-color 0.3s, color 0.3s;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.1);
     }
 
     .btn:active, .btn:hover {
       outline: none;
       background-color: #ff1493; /* Deep Pink */
       color: white;
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 0.6rem 0.8rem rgba(0, 0, 0, 0.15);
     }
 
     .btn.outline {
       color: #ff69b4; /* Hot Pink */
       background-color: transparent;
-      border: 2px solid #ff69b4;
+      border: 0.2rem solid #ff69b4;
     }
 
     .btn.outline:focus {
@@ -369,7 +371,7 @@
     }
 
     .btn.outline:hover {
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 0.6rem 0.8rem rgba(0, 0, 0, 0.15);
     }
 
     .btn.outline:hover,
@@ -382,7 +384,7 @@
     .btn.secondary {
       color: white;
       background-color: rgba(138, 51, 92, 0.9); /* Dark pink with slight transparency */
-      border: 2px solid rgba(138, 51, 92, 0.9);
+      border: 0.2rem solid rgba(138, 51, 92, 0.9);
       transition: background-color 0.3s, border-color 0.3s;
     }
 
@@ -398,8 +400,8 @@
     }
 
     .downNotice {
-      padding: 25px;
-      gap: 25px;
+      padding: 2.5rem;
+      gap: 2.5rem;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -407,8 +409,8 @@
       text-align: center;
       color: #d1467e; /* Deep Rose (Error Color) */
       background-color: rgba(209, 70, 126, 0.1); /* Soft background */
-      border: 2px solid #b13669; /* Dark Berry Pink */
-      border-radius: 10px;
+      border: 0.2rem solid #b13669; /* Dark Berry Pink */
+      border-radius: 1rem;
       transition: opacity 3s ease-in;
       opacity: 0;
     }
